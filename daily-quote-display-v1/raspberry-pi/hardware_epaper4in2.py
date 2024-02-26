@@ -18,7 +18,7 @@ import traceback
 logging.basicConfig(level=logging.DEBUG)
 
 
-def display_multiline_text(lines, start_x=10, start_y=10, y_inc=21):
+def display_data(lines, start_x=10, start_y=10, y_inc=21):
     logging.info(f"epd4in2 display text: {lines}")
     epd = epd4in2_V2.EPD()
     try:

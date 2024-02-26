@@ -8,15 +8,14 @@ from dotenv import load_dotenv
 import RPi.GPIO as GPIO
 import logging
 
-# use waveshare 4.2" E-Paper Module
-from hardware_epaper_4in2 import display_multiline_text
+hardware_module = None
 
 # When button will refresh the quote immediately, rather than at interval.
 BUTTON_PIN = 26
 
 # Define properties for the DISPLAY.
-# For 4.2", about 50 characters per line at Font15 works OK.
-max_chars = 50
+# For 4.2", about 55 characters per line at Font15 works OK.
+max_chars = 55
 
 # 180 = refresh automatically every 180 sec (3 minutes)
 refresh_interval = 180
@@ -29,7 +28,9 @@ df = None
 def button_callback(channel):
     # rather than calling to redraw, set previous_time to 0
     # which will trigger redrawing by loop() function
+    global previous_time
     previous_time = 0
+    logging.info(f"PIN {BUTTON_PIN} pressed")
 
 
 def setup_data():
@@ -165,7 +166,7 @@ def display_random_quote():
     # Convert long string into an array, since display hardware cannot
     # do automatic word wrap.
     lines = convert_to_multiline_array(quote, max_chars)
-    display_multiline_text(lines, start_x=10, start_y=10, y_inc=21)
+    hardware_module.display_data(lines, start_x=10, start_y=10, y_inc=21)
 
 
 def loop():
@@ -181,10 +182,6 @@ def loop():
             print("Error occurred:", e)
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-
-    # If called directly, just execute once.
-    # For forever loop, call main.py
-    setup()
-    loop()
+def set_hardware_module(module):
+    global hardware_module
+    hardware_module = module
