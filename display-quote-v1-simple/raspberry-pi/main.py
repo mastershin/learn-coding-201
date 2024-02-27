@@ -3,6 +3,7 @@ import importlib
 import RPi.GPIO as GPIO
 import time
 import logging
+import display_from_file as display_module
 
 # Define the intervals (in seconds)
 interval1 = 0.01  # Function 1 interval
@@ -15,23 +16,13 @@ prev_time = 0
 def main():
     global prev_time
 
-    if len(sys.argv) < 3:
-        print("Usage: main.py <source> <hardware>")
-        print("<source>: from_file, from_file_custom")
+    if len(sys.argv) < 2:
+        print("Usage: main.py <hardware>")
         print("<hardware>: console, epaper4in2")
         sys.exit(1)
 
-    # Dynamically import display algorithm module
-    display_module_name = "display_" + sys.argv[1]
-    try:
-        logging.info(f"Loading module: {display_module_name}")
-        display_module = importlib.import_module(display_module_name)
-    except ImportError:
-        print(f"Module {display_module_name} not found.")
-        sys.exit(1)
-
     # Dynamically import hardware module
-    hardware_module_name = "hardware_" + sys.argv[2]
+    hardware_module_name = "hardware_" + sys.argv[1]
 
     # Dynamically import the specified module
     try:
