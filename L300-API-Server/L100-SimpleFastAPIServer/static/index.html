@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Quote Display</title>
     <style>
         body {
             text-align: center;
             margin-top: 200px;
-            
+
             background-color: #333;
         }
+
         #timer {
             font-size: 12px;
             margin-top: 20px;
         }
+
         .myButton {
             background-color: transparent;
             border: none;
@@ -26,6 +29,7 @@
         .myButton:hover {
             color: #666;
         }
+
         #quoteContainer {
             font-size: 48px;
             animation: colorChange 15s infinite;
@@ -33,32 +37,39 @@
 
         @keyframes colorChange {
             0% {
-            color: red;
+                color: red;
             }
+
             20% {
-            color: orange;
+                color: orange;
             }
+
             30% {
-            color: yellow;
+                color: yellow;
             }
+
             40% {
-            color: green;
+                color: green;
             }
+
             50% {
-                color: #00FFFF; /* Aqua */
+                color: #00FFFF;
             }
 
             60% {
                 color: blue;
             }
+
             70% {
                 color: yellow;
             }
+
             80% {
-            color: orange;
+                color: orange;
             }
+
             90% {
-            color: red;
+                color: red;
             }
         }
 
@@ -72,6 +83,7 @@
         } */
     </style>
 </head>
+
 <body>
     <div id="quoteContainer"></div>
     <div id="timer"></div>
@@ -80,25 +92,24 @@
 
     <script>
         // Function to fetch the quote from the server
+        const DEFAULT_TIMER_SECONDS = 60;
         let timerInterval = null;
+        let secondsLeft = DEFAULT_TIMER_SECONDS;
         function fetchQuote() {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', '/quote', true);
-            xhr.onload = function() {
-            if (xhr.status === 200) {
-                // const data = JSON.parse(xhr.responseText);
-                const quote = xhr.responseText;
-                // Display the quote
-                document.getElementById('quoteContainer').innerText = quote;
-
-                // Start the timer                
-                startTimer();
-            } else {
-                console.error('Error:', xhr.status);
-            }
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // const data = JSON.parse(xhr.responseText);
+                    const quote = xhr.responseText;
+                    // Display the quote
+                    document.getElementById('quoteContainer').innerText = quote;
+                } else {
+                    console.error('Error:', xhr.status);
+                }
             };
-            xhr.onerror = function() {
-            console.error('Request failed');
+            xhr.onerror = function () {
+                console.error('Request failed');
             };
             xhr.send();
         }
@@ -109,23 +120,21 @@
 
         // Function to start the timer
         function startTimer() {
-            let secondsLeft = 60;
-            document.getElementById('timer').innerText = secondsLeft + ' ';
-            // Cancel all timers
-            clearInterval(timerInterval);
-
             timerInterval = setInterval(() => {
                 secondsLeft--;
                 document.getElementById('timer').innerText = secondsLeft + ' ';
 
                 if (secondsLeft === 0) {
-                    clearInterval(timerInterval);
+                    fetchQuote();
+                    secondsLeft = DEFAULT_TIMER_SECONDS;
                 }
             }, 1000);
         }
 
         function pauseTimer() {
-            clearInterval(timerInterval);
+            // instead of cancelling timer, increase the secondsLeft to 600
+            // clearInterval(timerInterval);
+            secondsLeft = 600;
         }
         // Link the continueToNextQuote function to the fetchQuote()
         onClick('nextButton', fetchQuote);
@@ -133,6 +142,8 @@
 
         // Initial fetch of the quote
         fetchQuote();
+        startTimer();
     </script>
 </body>
+
 </html>

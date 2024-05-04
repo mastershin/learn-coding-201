@@ -13,6 +13,7 @@ Also, you can access the server from a web browser by visiting the following URL
 http://localhost:8000/static/index.html
 
 Replace {category} with the desired category for the quote.
+
 """
 
 from fastapi import FastAPI
