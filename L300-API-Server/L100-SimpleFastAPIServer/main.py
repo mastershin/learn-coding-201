@@ -8,6 +8,10 @@ uvicorn main:app --reload
 To test the server from the terminal, you can use curl or any other HTTP client. Here's an example using curl:
 curl http://localhost:8000/quote/{category}
 
+Also, you can access the server from a web browser by visiting the following URL:
+
+http://localhost:8000/static/index.html
+
 Replace {category} with the desired category for the quote.
 """
 
@@ -15,6 +19,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import pandas as pd
 from fastapi.responses import PlainTextResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 
 data = {}
@@ -23,14 +28,19 @@ data = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global data
-    data['quotes'] = pd.read_csv("quotes.csv")
+    data["quotes"] = pd.read_csv("quotes.csv")
     yield
 
     # Clean up and release the resources
+    # Normally, like database connections, server-based caches, etc.
+    # For a simple memory based variables, don't really need to
+    # del, but for demonstration purposes, we are doing it here.
     del data
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/quote/{category}")
@@ -47,7 +57,7 @@ async def get_random_quote(category: str = "None", format: str = "txt"):
     - dict: A dictionary containing the random quote. If no quotes are found for the specified category, an error message is returned.
     """
 
-    quotes = data['quotes']
+    quotes = data["quotes"]
 
     if "category" in quotes.columns:
         # Filter quotes based on the category

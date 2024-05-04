@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quote Display</title>
+    <style>
+        body {
+            text-align: center;
+            margin-top: 200px;
+            
+            background-color: #333;
+        }
+        #timer {
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .myButton {
+            background-color: transparent;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            border: 1px solid #888;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .myButton:hover {
+            color: #666;
+        }
+        #quoteContainer {
+            font-size: 48px;
+            animation: colorChange 15s infinite;
+        }
+
+        @keyframes colorChange {
+            0% {
+            color: red;
+            }
+            20% {
+            color: orange;
+            }
+            30% {
+            color: yellow;
+            }
+            40% {
+            color: green;
+            }
+            50% {
+                color: #00FFFF; /* Aqua */
+            }
+
+            60% {
+                color: blue;
+            }
+            70% {
+                color: yellow;
+            }
+            80% {
+            color: orange;
+            }
+            90% {
+            color: red;
+            }
+        }
+
+        /*
+            background: linear-gradient(to right, #ff0000, #00ff00);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: background 0.5s ease;
+            margin-top: 20px;
+        } */
+    </style>
+</head>
+<body>
+    <div id="quoteContainer"></div>
+    <div id="timer"></div>
+    <button id="pauseButton" class="myButton">Pause</button>
+    <button id="nextButton" class="myButton">Next</button>
+
+    <script>
+        // Function to fetch the quote from the server
+        let timerInterval = null;
+        function fetchQuote() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/quote', true);
+            xhr.onload = function() {
+            if (xhr.status === 200) {
+                // const data = JSON.parse(xhr.responseText);
+                const quote = xhr.responseText;
+                // Display the quote
+                document.getElementById('quoteContainer').innerText = quote;
+
+                // Start the timer                
+                startTimer();
+            } else {
+                console.error('Error:', xhr.status);
+            }
+            };
+            xhr.onerror = function() {
+            console.error('Request failed');
+            };
+            xhr.send();
+        }
+
+        function onClick(id, func) {
+            document.getElementById(id).addEventListener('click', func);
+        }
+
+        // Function to start the timer
+        function startTimer() {
+            let secondsLeft = 60;
+            document.getElementById('timer').innerText = secondsLeft + ' ';
+            // Cancel all timers
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                document.getElementById('timer').innerText = secondsLeft + ' ';
+
+                if (secondsLeft === 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+        }
+        // Link the continueToNextQuote function to the fetchQuote()
+        onClick('nextButton', fetchQuote);
+        onClick('pauseButton', pauseTimer);
+
+        // Initial fetch of the quote
+        fetchQuote();
+    </script>
+</body>
+</html>
